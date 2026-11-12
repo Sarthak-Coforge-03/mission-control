@@ -79,9 +79,9 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
-# SQLite file lives inside backend/ so the path is the same locally and in Docker
-# (/app/data on a volume). MC_DB_PATH overrides it, e.g. for the restart test.
-DB_PATH = Path(os.environ.get("MC_DB_PATH") or BASE_DIR / "data" / "db.sqlite3")
+# SQLite lives in the repo-root data/ folder. MC_DB_PATH overrides it; Docker will
+# set it to the mounted volume (e.g. /data/db.sqlite3), and the restart test to a temp file.
+DB_PATH = Path(os.environ.get("MC_DB_PATH") or BASE_DIR.parent / "data" / "db.sqlite3")
 DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 DATABASES = {

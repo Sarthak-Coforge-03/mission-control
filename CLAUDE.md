@@ -15,7 +15,7 @@ Mission Control: a Go/No-Go launch console. Engineers file anomaly reports, a pi
 
 ## Layout
 - `backend/config/`: Django settings and root URLs. `backend/reports/`: the app. `tests/`: pytest-django tests.
-- SQLite file: `backend/data/db.sqlite3` (gitignored), overridable with `MC_DB_PATH`.
+- SQLite file: `data/db.sqlite3` at the repo root (gitignored), overridable with `MC_DB_PATH`.
 
 ## Rules
 - Launch limits, the verdict, brief-by time and cost come from plain code, never from a model.
