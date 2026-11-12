@@ -218,3 +218,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local Claude files
+*.local.md
+.claude/settings.local.json
