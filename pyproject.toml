@@ -1,0 +1,23 @@
+[project]
+name = "mission-control"
+version = "0.1.0"
+description = "Go/No-Go launch console: anomaly reports, launch-limit checks and Flight Director briefings"
+readme = "README.md"
+authors = [
+    { name = "Sarthak-Coforge-03", email = "sarthak.kakkar@coforge.com" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "ruff>=0.17.5",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+pythonpath = ["backend"]
+testpaths = ["tests"]
