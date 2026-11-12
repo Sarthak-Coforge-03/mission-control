@@ -222,3 +222,5 @@ __marimo__/
 # Local Claude files
 *.local.md
 .claude/settings.local.json
+
+data/
