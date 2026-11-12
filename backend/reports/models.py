@@ -82,3 +82,36 @@ class Report(models.Model):
     def __str__(self) -> str:
         """Short label used in the admin and the shell."""
         return f"#{self.pk} {self.station} ({self.engineer_name})"
+
+
+class Briefing(models.Model):
+    """The drafted briefing for one report; only a person may approve it."""
+
+    class Status(models.TextChoices):
+        """Approval state; the pipeline only ever creates PENDING."""
+
+        PENDING = "pending", "Pending"
+        APPROVED = "approved", "Approved"
+
+    class Rounds(models.IntegerChoices):
+        """How many draft/review rounds it took (the loop stops at three)."""
+
+        ONE = 1, "1 round"
+        TWO = 2, "2 rounds"
+        THREE = 3, "3 rounds"
+
+    report = models.OneToOneField(
+        Report, on_delete=models.CASCADE, related_name="briefing"
+    )
+    text = models.TextField()
+    rounds = models.IntegerField(choices=Rounds.choices)
+    status = models.CharField(
+        max_length=10, choices=Status.choices, default=Status.PENDING
+    )
+    approved_by = models.CharField(max_length=100, blank=True)
+    approved_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        """Short label used in the admin and the shell."""
+        return f"Briefing for report #{self.report_id} ({self.status})"
