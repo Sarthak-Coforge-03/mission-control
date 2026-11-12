@@ -7,7 +7,7 @@ Mission Control: a Go/No-Go launch console. Engineers file anomaly reports, a pi
 
 ## Commands
 - Install: `uv sync`; config: copy `.env.example` to `.env` (all values optional for local dev)
-- Test: `uv run pytest`; single test: `uv run pytest tests/test_x.py::test_name`
+- Test: `uv run pytest` (prints coverage every run; `--cov-report=html` for a browsable report); single test: `uv run pytest tests/test_x.py::test_name`
 - Lint and format: `uv run ruff check --fix . && uv run ruff format .`
 - Django: `uv run python backend/manage.py runserver` (also `makemigrations`, `migrate`)
 - Start app: `docker compose up` (not set up yet; add it here and in the README once it exists)
