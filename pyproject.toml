@@ -15,6 +15,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest>=9.2.0",
+    "pytest-cov>=7.1.0",
     "pytest-django>=4.14.0",
     "ruff>=0.17.5",
 ]
@@ -30,3 +31,14 @@ package = false
 DJANGO_SETTINGS_MODULE = "config.settings"
 pythonpath = ["backend"]
 testpaths = ["tests"]
+addopts = "--cov --cov-report=term-missing:skip-covered"
+
+[tool.coverage.run]
+source = ["backend"]
+branch = true
+omit = [
+    "*/migrations/*",
+    "backend/manage.py",
+    "backend/config/asgi.py",
+    "backend/config/wsgi.py",
+]
