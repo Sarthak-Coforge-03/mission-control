@@ -1,5 +1,7 @@
 """Database models for anomaly reports."""
 
+from decimal import Decimal
+
 from django.db import models
 
 
@@ -83,6 +85,11 @@ class Report(models.Model):
         """Short label used in the admin and the shell."""
         return f"#{self.pk} {self.station} ({self.engineer_name})"
 
+    def total_cost_usd(self) -> Decimal:
+        """Total cost of this report: the exact sum of its trace step costs."""
+        total = self.trace_steps.aggregate(total=models.Sum("cost_usd"))["total"]
+        return total if total is not None else Decimal(0)
+
 
 class Briefing(models.Model):
     """The drafted briefing for one report; only a person may approve it."""
@@ -115,3 +122,60 @@ class Briefing(models.Model):
     def __str__(self) -> str:
         """Short label used in the admin and the shell."""
         return f"Briefing for report #{self.report_id} ({self.status})"
+
+
+class TraceStep(models.Model):
+    """One pipeline step for a report: one card in the console, with tokens and cost."""
+
+    class Step(models.TextChoices):
+        """Which pipeline step ran."""
+
+        LIMITS = "limits", "Launch limits"
+        CLASSIFY = "classify", "Classify"
+        BRIEF_BY = "brief_by", "Brief-by time"
+        CHECK_INJECTION = "check_injection", "Check: hidden instructions"
+        CHECK_MISSING = "check_missing", "Check: missing details"
+        CHECK_PANIC = "check_panic", "Check: panic"
+        DRAFT = "draft", "Draft"
+        REVIEW = "review", "Review"
+
+    class Outcome(models.TextChoices):
+        """How the step ended."""
+
+        OK = "ok", "OK"
+        FALLBACK = "fallback", "Fallback"
+        ERROR = "error", "Error"
+
+    report = models.ForeignKey(
+        Report, on_delete=models.CASCADE, related_name="trace_steps"
+    )
+    order = models.PositiveSmallIntegerField()
+    step = models.CharField(max_length=20, choices=Step.choices)
+    round = models.IntegerField(choices=Briefing.Rounds.choices, null=True, blank=True)
+    model = models.CharField(max_length=50, blank=True)
+    input_tokens = models.PositiveIntegerField(default=0)
+    output_tokens = models.PositiveIntegerField(default=0)
+    cost_usd = models.DecimalField(
+        max_digits=10, decimal_places=6, default=Decimal(0)
+    )
+    duration_ms = models.PositiveIntegerField(default=0)
+    outcome = models.CharField(
+        max_length=10, choices=Outcome.choices, default=Outcome.OK
+    )
+    output = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        """Steps in pipeline order; each position is used once per report."""
+
+        ordering = ("order",)
+        constraints = (
+            models.UniqueConstraint(
+                fields=("report", "order"), name="unique_step_order_per_report"
+            ),
+        )
+
+    def __str__(self) -> str:
+        """Short label used in the admin and the shell."""
+        suffix = f" round {self.round}" if self.round else ""
+        return f"Report #{self.report_id} step {self.order}: {self.step}{suffix}"

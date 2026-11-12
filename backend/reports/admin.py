@@ -2,12 +2,31 @@
 
 from django.contrib import admin
 
-from .models import Briefing, Report
+from .models import Briefing, Report, TraceStep
+
+
+class TraceStepInline(admin.TabularInline):
+    """Shows a report's trace steps as a table on the report's admin page."""
+
+    model = TraceStep
+    extra = 0
+    fields = (
+        "order",
+        "step",
+        "round",
+        "model",
+        "input_tokens",
+        "output_tokens",
+        "cost_usd",
+        "outcome",
+    )
 
 
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):
-    """Lists reports with their key outcome columns."""
+    """Lists reports with their key outcome columns and their trace inline."""
+
+    inlines = (TraceStepInline,)
 
     list_display = (
         "id",
