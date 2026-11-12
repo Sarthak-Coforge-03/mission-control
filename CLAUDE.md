@@ -1,10 +1,9 @@
 # CLAUDE.md
-
 Mission Control: a Go/No-Go launch console. Engineers file anomaly reports, a pipeline sorts and checks them, and the Flight Director approves a drafted briefing.
 
 ## Plans: which file is which
 
-- `PLAN.md` (committed): the intended tech stack (Django + SQLite ORM, Next.js + TypeScript, Anthropic SDK).
+- `PLAN.md` (committed): the intended tech stack (Django + SQLite ORM, Django Ninja + Pydantic, Next.js + TypeScript, Anthropic SDK, Docker Compose).
 - `plan.local.md` (gitignored): the assignment brief and the grading rubric. Check work against it before calling a step done, and flag any deviation from the rubric.
 
 ## Commands
@@ -12,7 +11,8 @@ Mission Control: a Go/No-Go launch console. Engineers file anomaly reports, a pi
 - Install: `uv sync`
 - Test: `uv run pytest`; single test: `uv run pytest tests/test_x.py::test_name`
 - Lint and format: `uv run ruff check --fix . && uv run ruff format .`
-- Start app: not set up yet (add it here and in the README once it exists)
+- Start app: `docker compose up` (not set up yet; add it here and in the README once it exists)
+- uv is in non-package mode: code isn't installed; imports work via `sys.path` (`manage.py` folder, pytest `pythonpath`)
 
 ## Rules
 
