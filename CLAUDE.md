@@ -1,15 +1,30 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Mission Control: a Go/No-Go launch console. Engineers file anomaly reports, a pipeline sorts and checks them, and the Flight Director approves a drafted briefing.
 
-## Project status
+## Plans: which file is which
 
-`mission-control` is a new repository with no source code yet. It contains only a placeholder `README.md` and the standard GitHub Python `.gitignore`, which suggests Python will be the main language.
+- `PLAN.md` (committed): the intended tech stack (Django + SQLite ORM, Next.js + TypeScript, Anthropic SDK).
+- `plan.local.md` (gitignored): the assignment brief and the grading rubric. Check work against it before calling a step done, and flag any deviation from the rubric.
 
-There are no build, lint, or test commands yet. Once the project has its tooling (for example `pyproject.toml`, a test framework, or a linter), update this file with:
-- the commands to install, build, lint, and test, including how to run a single test
-- the high-level architecture: the main modules, how they interact, and how data flows between them
+## Commands
+
+- Install: `uv sync`
+- Test: `uv run pytest`; single test: `uv run pytest tests/test_x.py::test_name`
+- Lint and format: `uv run ruff check --fix . && uv run ruff format .`
+- Start app: not set up yet (add it here and in the README once it exists)
+
+## Rules
+
+- Launch limits, the verdict, brief-by time and cost come from plain code, never from a model.
+- All model calls go through one `LLMClient` interface; tests use its fake and need no network or API key.
+- Only a person can approve a briefing; the pipeline never sets it approved.
+
+## Hooks (.claude/settings.json)
+
+- Ruff runs on every edited `.py` file; the test suite runs on Stop and must pass.
+- `.env` files are blocked (`.env.example` is allowed).
 
 ## Git
 
-- `main` is the main branch. Feature work happens on `feature/*` branches (the current one is `feature/init`).
+- `main` is the main branch; feature work happens on `feature/*` branches.
