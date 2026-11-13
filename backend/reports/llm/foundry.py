@@ -2,7 +2,8 @@
 
 import os
 
-from anthropic import AsyncAnthropicFoundry
+from anthropic import AsyncAnthropicFoundry, transform_schema
+from pydantic import BaseModel
 
 from .base import LLMClient, LLMResult
 
@@ -18,13 +19,28 @@ class FoundryLLM(LLMClient):
         self.client = client
         self.deployment = deployment
 
-    async def complete(self, step: str, system: str, prompt: str) -> LLMResult:
-        """Send one user prompt and join the reply's text blocks, skipping thinking."""
+    async def complete(
+        self,
+        step: str,
+        system: str,
+        prompt: str,
+        schema: type[BaseModel] | None = None,
+    ) -> LLMResult:
+        """Send one user prompt and join the reply's text blocks, skipping thinking.
+
+        With a `schema`, structured output constrains the reply to JSON matching it.
+        """
+        extra = {}
+        if schema is not None:
+            extra["output_config"] = {
+                "format": {"type": "json_schema", "schema": transform_schema(schema)}
+            }
         message = await self.client.messages.create(
             model=self.deployment,
             system=system,
             messages=[{"role": "user", "content": prompt}],
             max_tokens=MAX_TOKENS,
+            **extra,
         )
         text = "".join(block.text for block in message.content if block.type == "text")
         return LLMResult(

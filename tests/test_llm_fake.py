@@ -47,6 +47,7 @@ async def test_every_call_is_recorded():
             "step": "draft",
             "system": "Write a briefing.",
             "prompt": "Feedback: be shorter.",
+            "schema": None,
         }
     ]
 
