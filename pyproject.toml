@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "anthropic>=2.8.0",
     "django>=6.1.3",
     "python-dotenv>=1.2.4",
 ]
@@ -15,6 +16,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest>=9.2.0",
+    "pytest-asyncio>=1.5.0",
     "pytest-cov>=7.1.0",
     "pytest-django>=4.14.0",
     "ruff>=0.17.5",
@@ -32,6 +34,7 @@ DJANGO_SETTINGS_MODULE = "config.settings"
 pythonpath = ["backend"]
 testpaths = ["tests"]
 addopts = "--cov --cov-report=term-missing:skip-covered"
+asyncio_mode = "auto"
 
 [tool.coverage.run]
 source = ["backend"]

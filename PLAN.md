@@ -7,7 +7,7 @@ The intended tools for the Go/No-Go launch console. Change this file if a choice
 | Back end  | Django                         | Mature, batteries included, built-in ORM, migrations and admin       |
 | Database  | SQLite through the Django ORM  | Django's default, no server to run, reports survive a restart        |
 | Front end | Next.js + TypeScript           | Typed components for the report form and the Flight Director console |
-| Model     | Claude through the Anthropic Python SDK (`anthropic`) | Structured outputs for sorting, one SDK for every model call |
+| Model     | Claude Opus 5.5 on Microsoft Foundry, through the Anthropic Python SDK (`AsyncAnthropicFoundry`), deployment `claude-opus-5-5-fast` by default | Structured outputs for sorting, one async SDK client for every model call so checks run concurrently |
 | API + validation | Django Ninja + Pydantic | One set of schemas validates form input (clear 422 messages), API responses and the model's structured replies |
 | Containers | Docker + Docker Compose | Django and Next.js as two services, SQLite on a named volume so reports survive a restart, `docker compose up` to start |
 
