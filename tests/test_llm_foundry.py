@@ -2,9 +2,16 @@
 
 from types import SimpleNamespace
 
-from anthropic import AsyncAnthropicFoundry
+from anthropic import AsyncAnthropicFoundry, transform_schema
+from pydantic import BaseModel
 from reports.llm.base import LLMClient, LLMResult
 from reports.llm.foundry import FoundryLLM, get_llm_client
+
+
+class Reply(BaseModel):
+    """A tiny reply schema used to test structured output."""
+
+    answer: str
 
 
 class StubMessages:
@@ -58,6 +65,18 @@ async def test_complete_sends_prompt_and_returns_text_and_usage():
         input_tokens=321,
         output_tokens=45,
     )
+
+
+async def test_schema_is_sent_as_structured_output_format():
+    """With a schema, the call asks for JSON output matching it, in the API's format."""
+    messages = StubMessages(make_reply())
+    llm = FoundryLLM(client=SimpleNamespace(messages=messages), deployment="d")
+
+    await llm.complete("classify", system="s", prompt="p", schema=Reply)
+
+    assert messages.calls[0]["output_config"] == {
+        "format": {"type": "json_schema", "schema": transform_schema(Reply)}
+    }
 
 
 def test_get_llm_client_builds_foundry_client_from_env(monkeypatch):

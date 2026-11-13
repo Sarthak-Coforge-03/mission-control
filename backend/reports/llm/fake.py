@@ -2,6 +2,8 @@
 
 import asyncio
 
+from pydantic import BaseModel
+
 from .base import LLMClient, LLMResult
 
 
@@ -28,11 +30,22 @@ class FakeLLM(LLMClient):
         self.input_tokens = input_tokens
         self.output_tokens = output_tokens
         self.model = model
-        self.calls: list[dict[str, str]] = []
+        self.calls: list[dict] = []
 
-    async def complete(self, step: str, system: str, prompt: str) -> LLMResult:
-        """Record the call, wait `delay` seconds, then return the next scripted reply."""
-        self.calls.append({"step": step, "system": system, "prompt": prompt})
+    async def complete(
+        self,
+        step: str,
+        system: str,
+        prompt: str,
+        schema: type[BaseModel] | None = None,
+    ) -> LLMResult:
+        """Record the call, wait `delay` seconds, then return the next scripted reply.
+
+        The schema is recorded but not enforced, so tests can script a bad reply.
+        """
+        self.calls.append(
+            {"step": step, "system": system, "prompt": prompt, "schema": schema}
+        )
         await asyncio.sleep(self.delay)
 
         queue = self._replies.get(step)
